@@ -1,7 +1,7 @@
 -- database for system of manager blogs
 
 -----------------------------------------------------tables-----------------------------------------------------------
-create table user(
+create table users(
     id_user serial not null auto_increment,
     first_name varchar(50) not null,
     last_name varchar(50) not null,
@@ -16,14 +16,8 @@ create table user(
 );
 
 create table user_action(
-    id_user_action serial,
-	id_user serial,
-	decription_action varchar(100),
-	creation_date timestamp
-	primary key (id_user_action),
-	foreign key (id_user) references users(id_user)
+    id_user_action
 );
-
 create table blog (
     id_blog serial not null auto_increment,
     id_user serial not null,
@@ -33,7 +27,7 @@ create table blog (
     icon_blog varchar(100) not null,
     cover_blog varchar(100) not null,
     primary key(id_blog),
-    foreign key(id_user) references user(id_user)
+    foreign key(id_user) references users(id_user)
 );
 
 create table donation (
@@ -44,7 +38,7 @@ create table donation (
     date_donation timestamp not null,
     payment_method varchar(25) not null,
     primary key(id_donation),
-    foreign key(id_user) references user(id_user),
+    foreign key(id_user) references users(id_user),
     foreign key(id_blog) references blog(id_blog)
 );
 
@@ -83,7 +77,7 @@ create table post_comment(
     date_creation timestamp not null,
     primary key(id_comment),
     foreign key(id_post) references post(id_post),
-    foreign key(id_user) references user(id_user)
+    foreign key(id_user) references users(id_user)
 );
 
 create table category(
@@ -99,6 +93,7 @@ create table subcategory(
     primary key(id_subcategory),
     foreign key(id_category) references category(id_category)
 );
+
 -- punto 2
 create function get_posts(int) returns table
 $$
