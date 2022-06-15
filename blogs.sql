@@ -16,8 +16,15 @@ create table user(
 );
 
 create table user_action(
-    id_user_action
+    id_user_action int not null auto_increment,
+    id_user int not null,
+    description_action varchar(50) not null,
+    date_action datetime not null,
+    primary key(id_user_action),
+    foreign key(id_user) references user(id_user)
+
 );
+
 create table blog (
     id_blog int not null auto_increment,
     id_user int not null,
@@ -53,13 +60,6 @@ create table post(
     id_category int not null,
 );
 
-create table post_subcategory(
-    id_post_detail int not null auto_increment,
-    id_post int not null,
-    subcategory varchar(50) not null,
-    primary key(id_post_detail),
-    foreign key(id_post) references post(id_post)
-);
 
 create table post_tag(
     id_post_tag int not null auto_increment,
