@@ -2,7 +2,7 @@
 
 -----------------------------------------------------tables-----------------------------------------------------------
 create table user(
-    id_user int not null auto_increment,
+    id_user serial not null auto_increment,
     first_name varchar(50) not null,
     last_name varchar(50) not null,
     nickname varchar(50) not null unique,
@@ -10,27 +10,26 @@ create table user(
     password varchar(25) not null,
     user_level varchar(10) not null,
     gender varchar(10) not null,
-    last_connection datetime not null,
+    last_connection timestamp not null,
     account_status varchar(10) not null,
     primary key(id_user)
 );
 
 create table user_action(
-    id_user_action int not null auto_increment,
-    id_user int not null,
-    description_action varchar(50) not null,
-    date_action datetime not null,
-    primary key(id_user_action),
-    foreign key(id_user) references user(id_user)
-
+    id_user_action serial,
+	id_user serial,
+	decription_action varchar(100),
+	creation_date timestamp
+	primary key (id_user_action),
+	foreign key (id_user) references users(id_user)
 );
 
 create table blog (
-    id_blog int not null auto_increment,
-    id_user int not null,
+    id_blog serial not null auto_increment,
+    id_user serial not null,
     title varchar(50) not null,
     description varchar(50) not null,
-    date_creation datetime not null,
+    date_creation timestamp not null,
     icon_blog varchar(100) not null,
     cover_blog varchar(100) not null,
     primary key(id_blog),
@@ -38,11 +37,11 @@ create table blog (
 );
 
 create table donation (
-    id_donation int not null auto_increment,
-    id_user int not null,
-    id_blog int not null,
-    amount int not null,
-    date_donation datetime not null,
+    id_donation serial not null auto_increment,
+    id_user serial not null,
+    id_blog serial not null,
+    amount serial not null,
+    date_donation timestamp not null,
     payment_method varchar(25) not null,
     primary key(id_donation),
     foreign key(id_user) references user(id_user),
@@ -51,44 +50,51 @@ create table donation (
 
 
 create table post(
-    id_post int not null auto_increment,
-    id_blog int not null,
+    id_post serial not null auto_increment,
+    id_blog serial not null,
     title varchar(50) not null,
     description varchar(50) not null,
-    date_creation datetime not null,
+    date_creation timestamp not null,
     content_url varchar(50) not null,
-    id_category int not null,
+    id_category serial not null,
 );
 
+create table post_subcategory(
+    id_post_detail serial not null auto_increment,
+    id_post serial not null,
+    subcategory varchar(50) not null,
+    primary key(id_post_detail),
+    foreign key(id_post) references post(id_post)
+);
 
 create table post_tag(
-    id_post_tag int not null auto_increment,
-    id_post int not null,
+    id_post_tag serial not null auto_increment,
+    id_post serial not null,
     tag varchar(50) not null,
     primary key(id_post_tag),
     foreign key(id_post) references post(id_post)
 );
 
 create table post_comment(
-    id_comment int not null auto_increment,
-    id_post int not null,
-    id_user int not null,
+    id_comment serial not null auto_increment,
+    id_post serial not null,
+    id_user serial not null,
     comment varchar(255) not null,
-    date_creation datetime not null,
+    date_creation timestamp not null,
     primary key(id_comment),
     foreign key(id_post) references post(id_post),
     foreign key(id_user) references user(id_user)
 );
 
 create table category(
-    id_category int not null auto_increment,
+    id_category serial not null auto_increment,
     category varchar(50) not null,
     primary key(id_category)
 );
 
 create table subcategory(
-    id_subcategory int not null auto_increment,
-    id_category int not null,
+    id_subcategory serial not null auto_increment,
+    id_category serial not null,
     subcategory varchar(50) not null,
     primary key(id_subcategory),
     foreign key(id_category) references category(id_category)
