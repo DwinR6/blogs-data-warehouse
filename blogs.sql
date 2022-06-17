@@ -1,8 +1,10 @@
 -- database for system of manager blogs
 
 -----------------------------------------------------tables-----------------------------------------------------------
+---Tabla1: blogs---
+
 create table users(
-    id_user serial not null auto_increment,
+    id_user serial not null ,
     first_name varchar(50) not null,
     last_name varchar(50) not null,
     nickname varchar(50) not null unique,
@@ -15,11 +17,19 @@ create table users(
     primary key(id_user)
 );
 
+---tabla2:user_action---
 create table user_action(
-    id_user_action
+    id_user_action serial not null,
+    id_user integer not null,
+    user_action varchar(50) not null,
+    date_creation timestamp not null,
+    primary key(id_user_action)
+
 );
+
+--tabla3:blogs---
 create table blog (
-    id_blog serial not null auto_increment,
+    id_blog serial not null ,
     id_user serial not null,
     title varchar(50) not null,
     description varchar(50) not null,
@@ -29,9 +39,9 @@ create table blog (
     primary key(id_blog),
     foreign key(id_user) references users(id_user)
 );
-
+---tabla4:donation---
 create table donation (
-    id_donation serial not null auto_increment,
+    id_donation serial not null ,
     id_user serial not null,
     id_blog serial not null,
     amount serial not null,
@@ -42,35 +52,37 @@ create table donation (
     foreign key(id_blog) references blog(id_blog)
 );
 
-
+---tabla5:post---
 create table post(
-    id_post serial not null auto_increment,
+    id_post serial not null ,
     id_blog serial not null,
     title varchar(50) not null,
     description varchar(50) not null,
     date_creation timestamp not null,
     content_url varchar(50) not null,
     id_category serial not null,
+    primary key(id_post),
+    foreign key(id_blog) references blog(id_blog)
 );
-
+---tabla6:post_subcategory---
 create table post_subcategory(
-    id_post_detail serial not null auto_increment,
+    id_post_detail serial not null ,
     id_post serial not null,
     subcategory varchar(50) not null,
     primary key(id_post_detail),
     foreign key(id_post) references post(id_post)
 );
-
+---tabla7:post_tag---
 create table post_tag(
-    id_post_tag serial not null auto_increment,
+    id_post_tag serial not null ,
     id_post serial not null,
     tag varchar(50) not null,
     primary key(id_post_tag),
     foreign key(id_post) references post(id_post)
 );
-
+---tabla8:post_comment---
 create table post_comment(
-    id_comment serial not null auto_increment,
+    id_comment serial not null ,
     id_post serial not null,
     id_user serial not null,
     comment varchar(255) not null,
@@ -79,15 +91,15 @@ create table post_comment(
     foreign key(id_post) references post(id_post),
     foreign key(id_user) references users(id_user)
 );
-
+---tabla9:category---
 create table category(
-    id_category serial not null auto_increment,
+    id_category serial not null ,
     category varchar(50) not null,
     primary key(id_category)
 );
-
+---tabla10:subcategory---
 create table subcategory(
-    id_subcategory serial not null auto_increment,
+    id_subcategory serial not null ,
     id_category serial not null,
     subcategory varchar(50) not null,
     primary key(id_subcategory),
