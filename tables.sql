@@ -1,7 +1,7 @@
 -- database for system of manager blogs
 
 -----------------------------------------------------tables-----------------------------------------------------------
--
+--
 ------------------------------------------------------ 1 - table users-----------------------------------------------------------
 create table users(
     id_user serial not null ,
@@ -11,10 +11,8 @@ create table users(
     email varchar(50) not null,
     password varchar(25) not null,
     gender varchar(10) not null,
-    primary key(id_user)
-);             
-
-
+    primary key(id_user)    
+);   
 
 --insert into users(first_name, last_name, nickname, email, password,  gender) values 
 --('Fatima Julissa', 'Hernandez Benitez', 'FatimaHB', 'fatimahb@mail.com', '123', 'Femenino' ),
@@ -38,6 +36,7 @@ create table logup(
     date_logup timestamp default current_timestamp,
     primary key(id_logup),
     foreign key(id_user) references users(id_user)
+    on delete cascade
 );
 
 
@@ -52,17 +51,11 @@ create table user_action(
     id_user integer not null,
     user_action varchar(50) not null,
     date_creation timestamp default current_timestamp,
-    primary key(id_user_action)
+    primary key(id_user_action),
+    foreign key(id_user) references users(id_user)
+    on delete cascade
 
 );
- ---logups
---insert into user_action (id_user, user_action) values (1, 'logup'),(2, 'logup'),(3, 'logup'),(4, 'logup'),(5, 'logup'),(6, 'logup'),(7, 'logup'),(8, 'logup'),(9, 'logup'),(10, 'logup');
-
----logins
---insert into user_action (id_user, user_action) values (1, 'login'),(2, 'login'),(3, 'login'),(4, 'login'),(5, 'login'),(6, 'login'),(7, 'login'),(8, 'login'),(9, 'login'),(10, 'login');
- 
----logouts
---insert into user_action (id_user, user_action) values (1, 'logout'),(2, 'logout'),(3, 'logout'),(4, 'logout'),(5, 'logout'),(6, 'logout'),(7, 'logout'),(8, 'logout'),(9, 'logout'),(10, 'logout');
 --------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -71,27 +64,31 @@ create table blog (
     id_blog serial not null ,
     id_user serial not null,
     title varchar(255) not null,
-    description varcharnot null,
-    date_creation timestamp not null,
+    description varchar not null,
+    date_creation timestamp default current_timestamp,
     icon_blog varchar(255) not null,
     cover_blog varchar(255) not null,
     primary key(id_blog),
     foreign key(id_user) references users(id_user)
+    on delete cascade
 );
 -------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------table user_blog-------------------------------------------------------------
-create table user_blog(
-    id_user_blog serial,
+create table subscription_blog(
+    id_subscription_blog serial,
     id_user integer not null,
     id_blog integer not null,
     user_level varchar(10) not null,
     account_status varchar(10) not null,
-    primary key(id_user_blog),
+    primary key(id_subscription_blog),
     foreign key(id_blog) references blog(id_blog),
     foreign key(id_user) references users(id_user)
+    on delete cascade
 );
 --------------------------------------------------------------------------------------------------------------------------------
+
+
 
 
 ------------------------------------------------------------- 4 - table dontation----------------------------------------------------
@@ -100,11 +97,12 @@ create table donation (
     id_user serial not null,
     id_blog serial not null,
     amount float not null,
-    date_donation timestamp not null,
+    date_donation timestamp default current_timestamp,
     payment_method varchar(25) not null,
     primary key(id_donation),
     foreign key(id_user) references users(id_user),
     foreign key(id_blog) references blog(id_blog)
+    on delete cascade
 );
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -124,13 +122,14 @@ create table post(
     id_user serial not null,
     title varchar(255) not null,
     description varchar not null,
-    date_creation timestamp not null,
+    date_creation timestamp default current_timestamp,
     content_url varchar(255) not null,
     id_category serial not null,
     primary key(id_post),
     foreign key(id_blog) references blog(id_blog),
     foreign key(id_category) references category(id_category),
     foreign key(id_user) references users(id_user)
+    on delete cascade
 );
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -142,6 +141,7 @@ create table subcategory(
     subcategory varchar(50) not null,
     primary key(id_subcategory),
     foreign key(id_category) references category(id_category)
+    on delete cascade
 );
 ---------------------------------------------------------------------------------------------------------------------------------
 
@@ -154,6 +154,7 @@ create table post_subcategory(
     primary key(id_post_subcategory),
     foreign key(id_post) references post(id_post),
     foreign key(id_subcategory) references subcategory(id_subcategory)
+    on delete cascade
 );
 --------------------------------------------------------------------------------------------------------------------------------
 
@@ -165,6 +166,7 @@ create table post_tag(
     tag varchar(50) not null,
     primary key(id_post_tag),
     foreign key(id_post) references post(id_post)
+    on delete cascade
 );
 ---------------------------------------------------------------------------------------------------------------------------------
 
@@ -176,8 +178,34 @@ create table post_comment(
     id_post serial not null,
     id_user serial not null,
     comment varchar not null,
-    date_creation timestamp not null,
+    date_creation timestamp default current_timestamp,
     primary key(id_comment),
     foreign key(id_post) references post(id_post),
     foreign key(id_user) references users(id_user)
+    on delete cascade
 );
+
+--------------------------------------------------------------------------------------------------------------------------------
+create table view_post(
+    id_view_post serial not null ,
+    id_post serial not null,
+    id_user integer default null,
+    primary key(id_view_post),
+    foreign key(id_post) references post(id_post),
+    foreign key(id_user) references users(id_user)
+    on delete cascade
+);
+
+ALTER SEQUENCE user_action_id_user_action_seq RESTART WITH 1;
+ALTER SEQUENCE logup_id_logup_seq RESTART WITH 1;
+ALTER SEQUENCE users_id_user_seq RESTART WITH 1;
+ALTER SEQUENCE blog_id_blog_seq RESTART WITH 1;
+ALTER SEQUENCE post_id_post_seq RESTART WITH 1;
+ALTER SEQUENCE category_id_category_seq RESTART WITH 1;
+ALTER SEQUENCE subcategory_id_subcategory_seq RESTART WITH 1;
+ALTER SEQUENCE post_subcategory_id_post_subcategory_seq RESTART WITH 1;
+ALTER SEQUENCE post_tag_id_post_tag_seq RESTART WITH 1;
+ALTER SEQUENCE post_comment_id_comment_seq RESTART WITH 1;
+ALTER SEQUENCE donation_id_donation_seq RESTART WITH 1;
+ALTER SEQUENCE subscription_blog_id_subscription_blog_seq RESTART WITH 1;
+ALTER SEQUENCE view_post_id_view_post_seq RESTART WITH 1;

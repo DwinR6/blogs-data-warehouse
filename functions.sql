@@ -6,7 +6,7 @@ create or replace function get_posts(integer) returns table(
     description varchar,
     created timestamp,
     category varchar(50),
-    subcategories varchar,
+    subcategories varchar(100),
     tags varchar(255),
     autor varchar(50),
     blog varchar(255),
@@ -16,31 +16,22 @@ create or replace function get_posts(integer) returns table(
 $$
     declare 
         id_b alias for $1;
+        rw record;
     begin
-        return query select 
-        post.id_post as id_post, 
-        post.title as post, 
-        post.description as description, 
-        post.date_creation as created, 
-        category.category as category, 
-        string_agg(subcategory.subcategory, ', ')::varchar as subcategories, 
-        string_agg(post_tag.tag, ', ')::varchar as tags, 
-        users.nickname as autor, 
-        blog.title as blog, 
-        count(post_comment.id_comment)::int as total_comments 
-
+        for rw in select post.id_post, post.title, post.description, post.date_creation, category.category as category, string_agg(subcategory.subcategory, ', ')::varchar as subcategories,  string_agg(post_tag.tag, ',')::varchar as tags, users.nickname as autor, blog.title as blog, count(post_comment.id_comment)::integer as total_comments
         from post
         inner join category on post.id_category = category.id_category
-        inner join post_subcategory on post_subcategory.id_post = post.id_post
-        inner join subcategory on subcategory.id_subcategory = post_subcategory.id_subcategory
-        inner join post_tag on post_tag.id_post = post.id_post
-        inner join post_comment on post_comment.id_post = post.id_post
-        inner join users on users.id_user = post.id_user
-        inner join blog on blog.id_blog = post.id_blog
-        where blog.id_blog = id_b
-        group by post.id_post, post.title, post.description, post.date_creation, category.category, users.nickname, blog.title;
-        
-        
+        inner join post_subcategory on post.id_post = post_subcategory.id_post
+        left join subcategory on post_subcategory.id_subcategory = subcategory.id_subcategory
+        left join post_tag on post.id_post = post_tag.id_post
+        inner join users on post.id_user = users.id_user
+        inner join blog on post.id_blog = blog.id_blog
+        left join post_comment on post.id_post = post_comment.id_post
+        where post.id_blog = id_b
+        group by post.id_post, post.title, post.description, post.date_creation, category.category, users.nickname, blog.title
+        loop
+         return query select rw.id_post, rw.title, rw.description, rw.date_creation, rw.category, rw.subcategories, rw.tags, rw.autor, rw.blog, rw.total_comments;
+        end loop;    
     end;
 $$ language plpgsql;
 --------------------------------------------------------------------------------------------------------------------------------
@@ -154,5 +145,5 @@ $$
     begin
         insert into user_action values(default, id_user, 'logout', default);        
     end;
-$$ language plpgsql;}
+$$ language plpgsql;
 -----------------------------------------------------------------------------------------------------------------------------------
